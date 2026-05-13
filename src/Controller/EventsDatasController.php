@@ -4,100 +4,84 @@ namespace Drupal\eventsdatas_events\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Pager\PagerManagerInterface;
-use Drupal\eventsdatas_events\Service\EventsDatasApiClient;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
+use GuzzleHttp\ClientInterface;
 
-final class EventsDatasController extends ControllerBase {
+class EventsDatasController extends ControllerBase
+{
+    protected ClientInterface $httpClient;
+    protected RequestStack $requestStack;
+    protected PagerManagerInterface $pagerManager;
 
-  public function __construct(
-    private readonly EventsDatasApiClient $apiClient,
-    private readonly PagerManagerInterface $pagerManager,
-    private readonly RequestStack $requestStack,
-  ) {}
-
-  public static function create(ContainerInterface $container): self {
-    return new self(
-      $container->get('eventsdatas_events.api_client'),
-      $container->get('pager.manager'),
-      $container->get('request_stack'),
-    );
-  }
-
-  public function list(): array {
-    $request = $this->requestStack->getCurrentRequest();
-    $params = [];
-
-    foreach (['city', 'category', 'date_from', 'date_to'] as $filter) {
-      $value = trim((string) $request->query->get($filter, ''));
-      if ($value !== '') {
-        $params[$filter] = $value;
-      }
+    public function __construct(
+        ClientInterface $http_client,
+        RequestStack $request_stack,
+        PagerManagerInterface $pager_manager
+    ) {
+        $this->httpClient = $http_client;
+        $this->requestStack = $request_stack;
+        $this->pagerManager = $pager_manager;
     }
 
-    $result = $this->apiClient->fetchEvents($params);
-    if (!$result['success']) {
-      return $this->emptyBuild((string) $result['message']);
+    public static function create(ContainerInterface $container)
+    {
+        return new static(
+            $container->get('http_client'),
+            $container->get('request_stack'),
+            $container->get('pager.manager')
+        );
     }
 
-    $events = is_array($result['events']) ? $result['events'] : [];
-    if ($events === []) {
-      return $this->emptyBuild('Aucun événement publié pour le moment.');
+    public function eventsList()
+    {
+        $config = $this->config('eventsdatas_events.settings');
+
+        $apiKey = $config->get('api_key');
+        $apiBaseUrl = rtrim($config->get('api_base_url'), '/');
+
+        $request = $this->requestStack->getCurrentRequest();
+
+        $page = (int) $request->query->get('page', 0);
+        $perPage = 10;
+        $currentPage = $page + 1;
+
+        try {
+            $response = $this->httpClient->request('GET', $apiBaseUrl . '/events', [
+                'headers' => [
+                    'X-API-Key' => $apiKey,
+                    'Accept' => 'application/json',
+                ],
+                'query' => [
+                    'page' => $currentPage,
+                    'per_page' => $perPage,
+                ],
+            ]);
+
+            $data = json_decode($response->getBody()->getContents(), TRUE);
+
+            $events = $data['data'] ?? [];
+            $total = $data['total'] ?? count($events);
+
+            $this->pagerManager->createPager($total, $perPage);
+
+            return [
+                '#theme' => 'eventsdatas_events_list',
+                '#events' => $events,
+                '#pager' => [
+                    '#type' => 'pager',
+                ],
+                '#cache' => [
+                    'max-age' => 0,
+                ],
+            ];
+        }
+        catch (\Exception $e) {
+            return [
+                '#markup' => $this->t('Unable to load events: @message', [
+                    '@message' => $e->getMessage(),
+                ]),
+            ];
+        }
     }
-
-    $perPage = $this->apiClient->getPerPage();
-    $total = count($events);
-    $pager = $this->pagerManager->createPager($total, $perPage);
-    $currentPage = $pager->getCurrentPage();
-    $pagedEvents = array_slice($events, $currentPage * $perPage, $perPage);
-
-    return [
-      '#theme' => 'eventsdatas_events_list',
-      '#events' => $pagedEvents,
-      '#pagination' => [
-        'total' => $total,
-        'per_page' => $perPage,
-      ],
-      '#attached' => ['library' => ['eventsdatas_events/frontend']],
-      '#cache' => ['max-age' => 300],
-    ];
-  }
-
-  public function detail(string $event_id): array {
-    $result = $this->apiClient->fetchEvent($event_id);
-    if (!$result['success'] || empty($result['event'])) {
-      return $this->emptyBuild((string) $result['message']);
-    }
-
-    $event = $result['event'];
-    $links = $this->apiClient->normalizeEventLinks($event);
-
-    return [
-      '#theme' => 'eventsdatas_event_detail',
-      '#event' => $event,
-      '#image_url' => $links['image_url'],
-      '#website_url' => $links['website_url'],
-      '#booking_url' => $links['booking_url'],
-      '#show_location' => $this->apiClient->showLocation(),
-      '#attached' => ['library' => ['eventsdatas_events/frontend']],
-      '#cache' => ['max-age' => 300],
-    ];
-  }
-
-  public function detailTitle(string $event_id): string {
-    $result = $this->apiClient->fetchEvent($event_id);
-    if ($result['success'] && !empty($result['event']['title'])) {
-      return (string) $result['event']['title'];
-    }
-    return 'Événement';
-  }
-
-  private function emptyBuild(string $message): array {
-    return [
-      '#markup' => '<div class="eventsdatas-empty">' . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '</div>',
-      '#attached' => ['library' => ['eventsdatas_events/frontend']],
-      '#cache' => ['max-age' => 60],
-    ];
-  }
-
 }
