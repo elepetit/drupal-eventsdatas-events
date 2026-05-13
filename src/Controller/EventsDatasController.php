@@ -26,6 +26,7 @@ final class EventsDatasController extends ControllerBase {
 
     public function list(): array {
         $request = $this->requestStack->getCurrentRequest();
+
         $params = [];
 
         foreach (['city', 'category', 'date_from', 'date_to'] as $filter) {
@@ -41,7 +42,7 @@ final class EventsDatasController extends ControllerBase {
             return $this->emptyBuild((string) $result['message']);
         }
 
-        $events = is_array($result['events']) ? $result['events'] : [];
+        $events = is_array($result['events'] ?? NULL) ? $result['events'] : [];
 
         if ($events === []) {
             return $this->emptyBuild('Aucun événement publié pour le moment.');
@@ -53,11 +54,11 @@ final class EventsDatasController extends ControllerBase {
         $pager = $this->pagerManager->createPager($total, $perPage);
         $currentPage = $pager->getCurrentPage();
 
-        $pagedEvents = array_slice($events, $currentPage * $perPage, $perPage);
+        $events = array_slice($events, $currentPage * $perPage, $perPage);
 
         return [
             '#theme' => 'eventsdatas_events_list',
-            '#events' => $pagedEvents,
+            '#events' => $events,
             '#pager' => [
                 '#type' => 'pager',
             ],
