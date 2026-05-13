@@ -1,51 +1,86 @@
-# EventsDatas Events pour Drupal 10
+# EventsDatas Events for Drupal 10
 
-Module Drupal 10 permettant d’afficher les événements EventsDatas via l’API.
+EventsDatas Events is a Drupal 10 module that allows you to display events from the EventsDatas API on your Drupal website.
 
-## Fonctionnalités
+The module provides:
+- events listing pages
+- event detail pages
+- Drupal blocks
+- shortcode/filter support
+- Twig templates
+- admin configuration pages
 
-- Page automatique : `/eventsdatas/events`
-- Page détail : `/eventsdatas/event/{id}`
-- Bloc Drupal : `EventsDatas - Liste d’événements`
-- Shortcode via filtre de texte : `[eventsdatas_events city="Paris" category="concert" api_limit="60" per_page="12"]`
-- Page de configuration admin : `/admin/config/services/eventsdatas-events`
-- Templates Twig surchargeables
-- CSS dédié
+---
 
-## Installation
+# Features
 
-1. Copier le dossier `eventsdatas_events` dans `web/modules/custom/`.
-2. Activer le module depuis l’administration Drupal ou avec Drush.
-3. Aller dans `Configuration > Services > EventsDatas Events`.
-4. Renseigner :
-   - URL API : `https://api.eventsdatas.cloud/api/v1/events`
-   - Clé API EventsDatas
-   - filtres par défaut si besoin
+## Events Listing
 
-## Shortcode
+Displays a list of events retrieved from the EventsDatas API.
 
-Pour utiliser le shortcode, activez le filtre `Shortcode EventsDatas Events` dans le format de texte concerné.
+Default route:
 
-Exemples :
+/eventsdatas/events
 
-```text
+---
+
+## Event Detail Page
+
+Displays detailed information for a single event.
+
+Default route:
+
+/eventsdatas/event/{id}
+
+---
+
+## Drupal Block
+
+The module includes a configurable Drupal block that can be added from:
+
+Administration → Structure → Block layout
+
+Block name:
+
+EventsDatas Events Block
+
+---
+
+## Shortcode / Filter Support
+
+The module supports shortcode-like integration for embedding event lists inside content.
+
+Example:
+
 [eventsdatas_events]
+
+Optional parameters:
+
 [eventsdatas_events city="Paris"]
-[eventsdatas_events category="concert" api_limit="60" per_page="12"]
-[eventsdatas_events city="Beauvais" per_page="6"]
-```
 
-## Bloc
+[eventsdatas_events category="music"]
 
-Ajouter le bloc depuis `Structure > Mise en page des blocs`.
-Chaque bloc peut avoir ses propres filtres : ville, catégorie, dates, limite API et nombre affiché.
+[eventsdatas_events per_page="5"]
 
-## Templates
+---
 
-Les templates sont dans `templates/` :
+# Requirements
 
-- `eventsdatas-events-list.html.twig`
-- `eventsdatas-event-card.html.twig`
-- `eventsdatas-event-detail.html.twig`
+- Drupal 10
+- PHP 8.1 or higher
+- An EventsDatas API key
 
-Ils peuvent être copiés dans le thème Drupal pour surcharge.
+---
+
+# Installation
+
+## Manual Installation
+
+Copy the module into:
+
+/modules/custom/eventsdatas_events
+
+Then enable it:
+
+```bash
+drush en eventsdatas_events
