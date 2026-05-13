@@ -33,7 +33,7 @@ class EventsDatasController extends ControllerBase
         );
     }
 
-    public function eventsList()
+    public function list()
     {
         $config = $this->config('eventsdatas_events.settings');
 
