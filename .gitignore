@@ -1,0 +1,27 @@
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.swp
+
+# Composer
+/vendor/
+
+# Drupal
+/web/sites/default/files/
+
+/node_modules/
+
+# Archives
+*.zip
+
+# OS files
+Thumbs.db
