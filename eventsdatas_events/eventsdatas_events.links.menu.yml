@@ -1,0 +1,5 @@
+eventsdatas_events.settings:
+  title: 'EventsDatas Events'
+  description: 'Configurer la connexion API EventsDatas.'
+  parent: system.admin_config_services
+  route_name: eventsdatas_events.settings

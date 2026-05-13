@@ -1,0 +1,24 @@
+{% if events is empty %}
+  <div class="eventsdatas-empty">Aucun événement publié pour le moment.</div>
+{% else %}
+  <div class="eventsdatas-wrapper">
+    <div class="eventsdatas-grid">
+      {% for event in events %}
+        {% set raw_item = event.extra_data.raw_item is defined and event.extra_data.raw_item is iterable ? event.extra_data.raw_item : {} %}
+        {% set image_url = event.image_url|default(raw_item.image_url|default('')) %}
+        {% set booking_url = event.booking_url|default(raw_item.booking_url|default('')) %}
+        {% include '@eventsdatas_events/eventsdatas-event-card.html.twig' with {
+          event: event,
+          image_url: image_url,
+          booking_url: booking_url
+        } only %}
+      {% endfor %}
+    </div>
+
+    {% if pagination.total is defined and pagination.per_page is defined and pagination.total > pagination.per_page %}
+      <div class="eventsdatas-pagination">
+        {{ pager() }}
+      </div>
+    {% endif %}
+  </div>
+{% endif %}

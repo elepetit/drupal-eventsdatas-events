@@ -1,0 +1,23 @@
+<?php
+
+/**
+ * @file
+ * Install hooks for EventsDatas Events.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function eventsdatas_events_install(): void {
+  \Drupal::configFactory()->getEditable('eventsdatas_events.settings')
+    ->set('api_url', 'https://api.eventsdatas.cloud/api/v1/events')
+    ->set('api_key', '')
+    ->set('api_limit', 100)
+    ->set('per_page', 10)
+    ->set('city', '')
+    ->set('category', '')
+    ->set('date_from', '')
+    ->set('date_to', '')
+    ->set('show_location', TRUE)
+    ->save();
+}

@@ -1,0 +1,52 @@
+{% set title = event.title|default('Événement sans titre') %}
+<main class="eventsdatas-single-wrapper">
+  <article class="eventsdatas-single-card">
+    <div class="eventsdatas-single-hero">
+      {% if image_url %}
+        <img class="eventsdatas-single-image" src="{{ image_url }}" alt="{{ title }}">
+      {% else %}
+        <div class="eventsdatas-single-placeholder"><span>Événement</span></div>
+      {% endif %}
+    </div>
+
+    <div class="eventsdatas-single-content">
+      <p class="eventsdatas-single-kicker">Événement</p>
+      <h1 class="eventsdatas-single-title">{{ title }}</h1>
+
+      <div class="eventsdatas-single-meta">
+        {% if event.start_datetime is defined and event.start_datetime %}
+          <div>📅 {{ event.start_datetime|date('d/m/Y H:i') }}</div>
+        {% endif %}
+
+        {% if show_location and event.venue_name is defined and event.venue_name %}
+          <div>
+            📍
+            {% if event.latitude is defined and event.longitude is defined and event.latitude and event.longitude %}
+              <a class="eventsdatas-map-link" href="https://www.google.com/maps?q={{ event.latitude }},{{ event.longitude }}" target="_blank" rel="noopener noreferrer">{{ event.venue_name }}</a>
+            {% else %}
+              {{ event.venue_name }}
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+
+      {% if event.long_description is defined and event.long_description %}
+        <div class="eventsdatas-single-text">{{ event.long_description|nl2br }}</div>
+      {% elseif event.short_description is defined and event.short_description %}
+        <div class="eventsdatas-single-text">{{ event.short_description|nl2br }}</div>
+      {% endif %}
+
+      <div class="eventsdatas-single-actions">
+        {% if website_url %}
+          <a class="eventsdatas-link" href="{{ website_url }}" target="_blank" rel="noopener noreferrer">Site web</a>
+        {% endif %}
+
+        {% if booking_url %}
+          <a class="eventsdatas-link eventsdatas-link-secondary" href="{{ booking_url }}" target="_blank" rel="noopener noreferrer">Réserver</a>
+        {% endif %}
+
+        <a class="eventsdatas-link eventsdatas-link-secondary" href="{{ path('eventsdatas_events.list') }}">Retour à la liste</a>
+      </div>
+    </div>
+  </article>
+</main>

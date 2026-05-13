@@ -1,0 +1,7 @@
+name: 'EventsDatas Events'
+type: module
+description: 'Affiche les événements EventsDatas via l’API : page, bloc et shortcode.'
+package: EventsDatas
+core_version_requirement: ^10
+dependencies:
+  - drupal:filter

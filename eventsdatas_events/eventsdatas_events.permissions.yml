@@ -1,0 +1,3 @@
+administer eventsdatas events:
+  title: 'Administrer EventsDatas Events'
+  description: 'Configurer la connexion API et les options d’affichage EventsDatas.'

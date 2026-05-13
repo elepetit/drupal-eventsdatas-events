@@ -1,0 +1,37 @@
+<?php
+
+/**
+ * @file
+ * Hooks for EventsDatas Events.
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function eventsdatas_events_theme($existing, $type, $theme, $path): array {
+  return [
+    'eventsdatas_events_list' => [
+      'variables' => [
+        'events' => [],
+        'pagination' => [],
+        'message' => NULL,
+      ],
+    ],
+    'eventsdatas_event_card' => [
+      'variables' => [
+        'event' => [],
+        'image_url' => '',
+        'booking_url' => '',
+      ],
+    ],
+    'eventsdatas_event_detail' => [
+      'variables' => [
+        'event' => [],
+        'image_url' => '',
+        'website_url' => '',
+        'booking_url' => '',
+        'show_location' => TRUE,
+      ],
+    ],
+  ];
+}

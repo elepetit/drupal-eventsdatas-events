@@ -1,0 +1,8 @@
+services:
+  eventsdatas_events.api_client:
+    class: Drupal\eventsdatas_events\Service\EventsDatasApiClient
+    arguments: ['@http_client', '@config.factory', '@logger.channel.eventsdatas_events']
+
+  logger.channel.eventsdatas_events:
+    parent: logger.channel_base
+    arguments: ['eventsdatas_events']

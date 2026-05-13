@@ -1,0 +1,51 @@
+<article class="eventsdatas-card">
+  <div class="eventsdatas-image-wrap">
+    {% if image_url %}
+      <img class="eventsdatas-image" src="{{ image_url }}" alt="{{ event.title|default('Événement') }}">
+    {% else %}
+      <div class="eventsdatas-placeholder">Aucun visuel</div>
+    {% endif %}
+  </div>
+
+  <div class="eventsdatas-body">
+    <h3 class="eventsdatas-title">{{ event.title|default('Événement sans titre') }}</h3>
+
+    <div class="eventsdatas-meta-list">
+      <div class="eventsdatas-meta-item">
+        <span class="eventsdatas-meta-icon">📅</span>
+        <span>
+          {% if event.start_datetime is defined and event.start_datetime %}
+            {{ event.start_datetime|date('d/m/Y H:i') }}
+          {% else %}
+            Date non renseignée
+          {% endif %}
+        </span>
+      </div>
+
+      {% if event.venue_name is defined and event.venue_name %}
+        <div class="eventsdatas-meta-item">
+          <span class="eventsdatas-meta-icon">📍</span>
+          <span>
+            {% if event.latitude is defined and event.longitude is defined and event.latitude and event.longitude %}
+              <a class="eventsdatas-map-link" href="https://www.google.com/maps?q={{ event.latitude }},{{ event.longitude }}" target="_blank" rel="noopener noreferrer">{{ event.venue_name }}</a>
+            {% else %}
+              {{ event.venue_name }}
+            {% endif %}
+          </span>
+        </div>
+      {% endif %}
+    </div>
+
+    {% if event.short_description is defined and event.short_description %}
+      <div class="eventsdatas-text">{{ event.short_description }}</div>
+    {% endif %}
+
+    <div class="eventsdatas-footer">
+      <a class="eventsdatas-link" href="{{ path('eventsdatas_events.detail', {'event_id': event.id|default('')}) }}">Détails</a>
+
+      {% if booking_url %}
+        <a class="eventsdatas-link eventsdatas-link-secondary" href="{{ booking_url }}" target="_blank" rel="noopener noreferrer">Réserver</a>
+      {% endif %}
+    </div>
+  </div>
+</article>

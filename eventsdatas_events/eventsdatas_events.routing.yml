@@ -1,0 +1,27 @@
+eventsdatas_events.settings:
+  path: '/admin/config/services/eventsdatas-events'
+  defaults:
+    _form: '\Drupal\eventsdatas_events\Form\EventsDatasSettingsForm'
+    _title: 'EventsDatas Events'
+  requirements:
+    _permission: 'administer eventsdatas events'
+
+eventsdatas_events.list:
+  path: '/eventsdatas/events'
+  defaults:
+    _controller: '\Drupal\eventsdatas_events\Controller\EventsDatasController::list'
+    _title: 'Événements'
+  requirements:
+    _permission: 'access content'
+
+eventsdatas_events.detail:
+  path: '/eventsdatas/event/{event_id}'
+  defaults:
+    _controller: '\Drupal\eventsdatas_events\Controller\EventsDatasController::detail'
+    _title_callback: '\Drupal\eventsdatas_events\Controller\EventsDatasController::detailTitle'
+  requirements:
+    _permission: 'access content'
+  options:
+    parameters:
+      event_id:
+        type: string
