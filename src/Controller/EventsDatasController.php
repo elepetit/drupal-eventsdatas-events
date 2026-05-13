@@ -84,4 +84,37 @@ class EventsDatasController extends ControllerBase
             ];
         }
     }
+    public function detail($id)
+    {
+        $config = $this->config('eventsdatas_events.settings');
+
+        $apiKey = $config->get('api_key');
+        $apiBaseUrl = rtrim($config->get('api_base_url'), '/');
+
+        try {
+            $response = $this->httpClient->request('GET', $apiBaseUrl . '/events/' . $id, [
+                'headers' => [
+                    'X-API-Key' => $apiKey,
+                    'Accept' => 'application/json',
+                ],
+            ]);
+
+            $event = json_decode($response->getBody()->getContents(), TRUE);
+
+            return [
+                '#theme' => 'eventsdatas_event_detail',
+                '#event' => $event,
+                '#cache' => [
+                    'max-age' => 0,
+                ],
+            ];
+        }
+        catch (\Exception $e) {
+        return [
+            '#markup' => $this->t('Unable to load event: @message', [
+                '@message' => $e->getMessage(),
+            ]),
+        ];
+    }
+}
 }
